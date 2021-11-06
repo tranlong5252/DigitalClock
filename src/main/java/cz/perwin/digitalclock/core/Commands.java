@@ -1,43 +1,18 @@
 package cz.perwin.digitalclock.core;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
-import org.bukkit.ChatColor;
+import cz.perwin.digitalclock.commands.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import cz.perwin.digitalclock.DigitalClock;
-import cz.perwin.digitalclock.commands.CommandAddingminutes;
-import cz.perwin.digitalclock.commands.CommandCreate;
-import cz.perwin.digitalclock.commands.CommandDepth;
-import cz.perwin.digitalclock.commands.CommandDisablecountdown;
-import cz.perwin.digitalclock.commands.CommandDisablestopwatch;
-import cz.perwin.digitalclock.commands.CommandFill;
-import cz.perwin.digitalclock.commands.CommandHelp;
-import cz.perwin.digitalclock.commands.CommandList;
-import cz.perwin.digitalclock.commands.CommandMaterial;
-import cz.perwin.digitalclock.commands.CommandMove;
-import cz.perwin.digitalclock.commands.CommandOff;
-import cz.perwin.digitalclock.commands.CommandReload;
-import cz.perwin.digitalclock.commands.CommandRemove;
-import cz.perwin.digitalclock.commands.CommandRotate;
-import cz.perwin.digitalclock.commands.CommandRunclock;
-import cz.perwin.digitalclock.commands.CommandSetcountdown;
-import cz.perwin.digitalclock.commands.CommandSetstopwatch;
-import cz.perwin.digitalclock.commands.CommandSettime;
-import cz.perwin.digitalclock.commands.CommandStopclock;
-import cz.perwin.digitalclock.commands.CommandTP;
-import cz.perwin.digitalclock.commands.CommandToggleampm;
-import cz.perwin.digitalclock.commands.CommandToggleblinking;
-import cz.perwin.digitalclock.commands.CommandToggleingametime;
-import cz.perwin.digitalclock.commands.CommandToggleseconds;
-import cz.perwin.digitalclock.commands.CommandUpdate;
-import cz.perwin.digitalclock.commands.ICommand;
 
 public class Commands implements CommandExecutor {
-	private DigitalClock i;
+	private final DigitalClock i;
 	public static final HashMap<String, Class<?>> commandList = new HashMap<>();
 	
 	static {
@@ -68,6 +43,7 @@ public class Commands implements CommandExecutor {
 		commandList.put("off", CommandOff.class);
 		commandList.put("help", CommandHelp.class);
 		commandList.put("?", CommandHelp.class);
+		commandList.put("hours", CommandTogglehours.class);
 	}
 	
 	public Commands(DigitalClock i) {
@@ -85,8 +61,8 @@ public class Commands implements CommandExecutor {
 						ICommand ic = null;
 						try {
 							Class<?> clazz = Commands.class.getClassLoader().loadClass(commandList.get(args[0].toLowerCase()).getName());
-							ic = (ICommand) clazz.newInstance();
-						} catch(ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+							ic = (ICommand) clazz.getDeclaredConstructor().newInstance();
+						} catch(ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
 							System.err.println("Problem occured when processing command: " + e.getMessage());
 							//e.printStackTrace();
 						} finally {
@@ -95,7 +71,7 @@ public class Commands implements CommandExecutor {
 							}
 						}
 					} else {
-						player.sendMessage(ChatColor.DARK_RED + DigitalClock.getMessagePrefix() + ChatColor.RED + " This argument doesn't exist. Show '/"+ usedcmd + " help' for more info.");
+						player.sendMessage("§4" + DigitalClock.getMessagePrefix() + "§c This argument doesn't exist. Show '/"+ usedcmd + " help' for more info.");
 					}
         		} else {
         			switch(args[0].toLowerCase()) {
@@ -109,12 +85,12 @@ public class Commands implements CommandExecutor {
     					this.processCommand(usedcmd, null, args, new CommandOff());
         				break;
         			default:
-        				sender.sendMessage(ChatColor.DARK_RED + DigitalClock.getMessagePrefix() + ChatColor.RED + " This command can be executed only from the game!");
+        				sender.sendMessage("§4" + DigitalClock.getMessagePrefix() + "§c This command can be executed only from the game!");
         				break;
         			}
         		}
 			} else {
-				sender.sendMessage(ChatColor.GREEN + "---- DigitalClock v"+ this.i.getDescription().getVersion() +" ----\nAuthor: PerwinCZ\nRun command '/"+ usedcmd + " help' in game for commands list.");
+				sender.sendMessage("§a---- DigitalClock v"+ this.i.getDescription().getVersion() +" ----\nAuthor: PerwinCZ\nRun command '/"+ usedcmd + " help' in game for commands list.");
 			}
 			return true;
 		} 

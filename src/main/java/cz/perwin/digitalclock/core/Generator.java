@@ -23,10 +23,11 @@ import com.maxmind.geoip.LookupService;
 import com.maxmind.geoip.timeZone;
 
 import cz.perwin.digitalclock.DigitalClock;
+import org.bukkit.material.MaterialData;
 
 public class Generator {
 	private static Generator generator;
-	private DigitalClock i;
+	private final DigitalClock i;
 
 	public Generator(DigitalClock i) {
 		this.i = i;
@@ -90,10 +91,8 @@ public class Generator {
 					hours = realnum[0];
 					minutes = realnum[1];
 					seconds = realnum[2];
-					this.generatingSequence(clock, hours, minutes, seconds, online);
-				} else {
-					this.generatingSequence(clock, hours, minutes, seconds, online);
 				}
+				this.generatingSequence(clock, hours, minutes, seconds, online);
 			}
 		} else {
 			this.generatingSequence(clock, hours, minutes, seconds, null);
@@ -153,16 +152,15 @@ public class Generator {
 			hours = "0" + hours;
 		}
 		String seconds = "00";
-		String[] result = { hours, minutes, seconds };
-		return result;
+		return new String[]{ hours, minutes, seconds };
 	}
 
 	public String[] getNumbersFromSeconds(int cdt) {
 		String hours = "00";
 		String minutes = "00";
 		String seconds = "00";
-		int ho = (int) Math.floor(cdt / 3600);
-		int mi = (int) Math.floor((cdt - ho * 3600) / 60);
+		int ho = (int) Math.floor(cdt / 3600f);
+		int mi = (int) Math.floor((cdt - ho * 3600) / 60f);
 		int se = cdt - ho * 3600 - mi * 60;
 		if(ho < 100 && mi < 60 && se < 60) {
 			hours = ho + "";
@@ -178,8 +176,7 @@ public class Generator {
 				seconds = "0" + seconds;
 			}
 		}
-		String[] result = { hours, minutes, seconds };
-		return result;
+		return new String[]{ hours, minutes, seconds };
 	}
 
 	public String[] getRealNumbers(int mins, TimeZone tz) {
@@ -191,8 +188,7 @@ public class Generator {
 		String hours = new SimpleDateFormat("HH").format(cal.getTime()) + "";
 		String minutes = new SimpleDateFormat("mm").format(cal.getTime()) + "";
 		String seconds = new SimpleDateFormat("ss").format(cal.getTime()) + "";
-		String[] result = { hours, minutes, seconds };
-		return result;
+		return new String[]{ hours, minutes, seconds };
 	}
 
 	public void generatingSequence(Clock clock, final String phours, final String minutes, final String seconds, final Player online) {
@@ -202,6 +198,7 @@ public class Generator {
 		byte d = clock.getData();
 		byte fd = clock.getFillingData();
 		boolean ss = clock.shouldShowSeconds();
+		boolean hh = clock.shouldShowHours();
 		boolean bl = clock.isBlinking();
 		boolean blm = clock.isBlinkingChangerON();
 		boolean ampm = clock.getAMPM();
@@ -249,7 +246,23 @@ public class Generator {
 		generate(w * 3 + 1, minutes.charAt(0) - '0', ca, m, d, f, fd, online);
 		generate(w * 4 + 1, ca, f, fd);
 		generate(w * 4 + 2, minutes.charAt(1) - '0', ca, m, d, f, fd, online);
-
+		if (hh) {
+			if (bl) {
+				if (blm) {
+					generate(w * 5 + 2, 10, ca, f, d, f, fd, online);
+					clock.setBlinkingChanger(false);
+				} else {
+					generate(w * 5 + 2, 10, ca, m, d, f, fd, online);
+					clock.setBlinkingChanger(true);
+				}
+			} else {
+				generate(w * 5 + 2, 10, ca, m, d, f, fd, online);
+			}
+			//todo mm:ss
+			generate(w * 6 + 2, hours.charAt(0) - '0', ca, m, d, f, fd, online);
+			generate(w * 7 + 2, ca, f, fd);
+			generate(w * 7 + 3, seconds.charAt(1) - '0', ca, m, d, f, fd, online);
+		}
 		if(ss) {
 			if(bl) {
 				if(blm) {
@@ -267,8 +280,8 @@ public class Generator {
 			generate(w * 7 + 2, ca, f, fd);
 			generate(w * 7 + 3, seconds.charAt(1) - '0', ca, m, d, f, fd, online);
 
-			if(ampm && letter != null) {
-				if(letter == "A") {
+			if(ampm) {
+				if(letter.equals("A")) {
 					generate(w * 8 + 4, 11, ca, m, d, f, fd, online);
 				} else {
 					generate(w * 8 + 4, 12, ca, m, d, f, fd, online);
@@ -277,8 +290,8 @@ public class Generator {
 				generate(w * 9 + 5, 13, ca, m, d, f, fd, online);
 			}
 		} else {
-			if(ampm && letter != null) {
-				if(letter == "A") {
+			if(ampm) {
+				if(letter.equals("A")) {
 					generate(w * 5 + 3, 11, ca, m, d, f, fd, online);
 				} else {
 					generate(w * 5 + 3, 12, ca, m, d, f, fd, online);
@@ -314,7 +327,8 @@ public class Generator {
 						online.sendBlockChange(newLoc, mat, md);
 					} else {
 						newBlock.setType(mat);
-						newBlock.setData(md);
+						MaterialData blockData = newBlock.getState().getData();
+						blockData.setData(fd);
 					}
 				}
 			}
@@ -328,7 +342,8 @@ public class Generator {
 				Location newLoc = ca.getLocation(p, 0, i, de);
 				Block newBlock = newLoc.getBlock();
 				newBlock.setType(f);
-				newBlock.setData(fd);
+				MaterialData blockData = newBlock.getState().getData();
+				blockData.setData(fd);
 			}
 		}
 	}
@@ -338,7 +353,7 @@ public class Generator {
 		File file = new File(new File(Generator.getGenerator().getMain().getDataFolder(), "terrainbackups"), clock.getName() + ".txt");
 		BufferedReader br;
 		String line;
-		ArrayList<String> lines = new ArrayList<String>();
+		ArrayList<String> lines = new ArrayList<>();
 		try {
 			br = new BufferedReader(new FileReader(file));
 			while((line = br.readLine()) != null) {
@@ -362,7 +377,8 @@ public class Generator {
 					Material mat = Material.valueOf(data[0]);
 					byte md = (byte) Integer.parseInt(data[1]);
 					newLoc.getBlock().setType(mat);
-					newLoc.getBlock().setData(md);
+					MaterialData blockData = newLoc.getBlock().getState().getData();
+					blockData.setData(md);
 					if(Generator.getGenerator().getMain().shouldGenerateSeparately()) {
 						for(Player online : Bukkit.getServer().getOnlinePlayers()) {
 							online.sendBlockChange(newLoc, mat, md);

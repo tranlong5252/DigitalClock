@@ -19,15 +19,12 @@ public class Version {
 	
 	protected static void check(final String currentVersion) {
 		System.out.println("[DigitalClock] Checking if there is a newer version...");
-		Thread t = new Thread(new Runnable() {
-			@Override
-			public void run() {
-            	Thread.currentThread().setName(Thread.currentThread().getName() + " - DigitalClock version check");
-				if(currentVersion.equals(Version.getActualVersion().getVersion())) {
-					System.out.println("[DigitalClock] Version of this plugin (v"+ currentVersion +") is actual.");
-				} else {
-					System.out.println("[DigitalClock] There is a newer version (v"+ Version.getActualVersion().getVersion() +") of this plugin (v"+ currentVersion +"). Download it from "+ Version.getActualVersion().getDownloadLink() +" or use command '/dc update'.");
-				}
+		Thread t = new Thread(() -> {
+			Thread.currentThread().setName(Thread.currentThread().getName() + " - DigitalClock version check");
+			if(currentVersion.equals(Version.getActualVersion().getVersion())) {
+				System.out.println("[DigitalClock] Version of this plugin (v"+ currentVersion +") is actual.");
+			} else {
+				System.out.println("[DigitalClock] There is a newer version (v"+ Version.getActualVersion().getVersion() +") of this plugin (v"+ currentVersion +"). Download it from "+ Version.getActualVersion().getDownloadLink() +" or use command '/dc update'.");
 			}
 		});
 		t.start();
@@ -48,12 +45,12 @@ public class Version {
 	
 	public static void update(final CommandSender sender, final String prefix, String currentVersion, final String pluginName) {
 		if(Version.updatingThread != null) {
-			sendMessage(sender, ChatColor.DARK_GREEN + prefix + ChatColor.GREEN +" Plugin is currently updating");
+			sendMessage(sender, "§2" + prefix + ChatColor.GREEN +" Plugin is currently updating");
 		} else {
 			if(Version.getActualVersion().getVersion().equals(currentVersion)) {
-				sendMessage(sender, ChatColor.DARK_RED + prefix + ChatColor.RED +" Your version is actual so it can't be updated");
+				sendMessage(sender, "§4" + prefix + ChatColor.RED +" Your version is actual so it can't be updated");
 			} else {
-				sendMessage(sender, ChatColor.DARK_GREEN + prefix + ChatColor.GREEN +" Updating process started, please wait until it finishes");
+				sendMessage(sender, "§2" + prefix + ChatColor.GREEN +" Updating process started, please wait until it finishes");
 				
 				Version.updatingThread = new Thread(new Runnable() {
 					@Override
@@ -70,10 +67,10 @@ public class Version {
 							fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
 							fos.close();
 
-							this.sendMessage(ChatColor.DARK_GREEN + prefix + ChatColor.GREEN +" Plugin has been updated. Use '/reload' command or restart the server");
+							this.sendMessage("§2" + prefix + ChatColor.GREEN +" Plugin has been updated. Use '/reload' command or restart the server");
 						} catch(Exception e) {
 							//e.printStackTrace();
-							this.sendMessage(ChatColor.DARK_RED + prefix + ChatColor.RED +" An error occured when updating plugin ("+ e +")");
+							this.sendMessage("§4" + prefix + ChatColor.RED +" An error occured when updating plugin ("+ e +")");
 						} finally {
 							Version.updatingThread = null;
 						}

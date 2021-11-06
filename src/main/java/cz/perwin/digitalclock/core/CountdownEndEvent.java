@@ -7,8 +7,8 @@ import org.bukkit.event.HandlerList;
 
 public class CountdownEndEvent extends Event {
 	private static final HandlerList handlers = new HandlerList();
-	private Clock clock;
-	private Date endtime;
+	private final Clock clock;
+	private final Date endtime;
 
 	public static HandlerList getHandlerList() {
 	    return handlers;

@@ -20,14 +20,14 @@ import cz.perwin.digitalclock.core.Clock;
 import cz.perwin.digitalclock.core.Commands;
 import cz.perwin.digitalclock.core.Events;
 import cz.perwin.digitalclock.core.Generator;
-import cz.perwin.digitalclock.utils.Metrics;
+//import cz.perwin.digitalclock.utils.Metrics;
 
 public class DigitalClock extends JavaPlugin {
-    private Map<Player, String> enableBuildUsers = new HashMap<Player, String>();
-    private Map<Player, String> enableMoveUsers = new HashMap<Player, String>();
-    private Map<String, Integer> usersClock = new HashMap<String, Integer>();
-	private ArrayList<String> clocks = new ArrayList<String>();
-	private final Logger console = Logger.getLogger("Minecraft");
+    private Map<Player, String> enableBuildUsers = new HashMap<>();
+    private Map<Player, String> enableMoveUsers = new HashMap<>();
+    private Map<String, Integer> usersClock = new HashMap<>();
+	private ArrayList<String> clocks = new ArrayList<>();
+	private final Logger console = this.getLogger();
 	private ClockMap clockTasks = new ClockMap();
 	private FileConfiguration clocksConf = null;
 	private File clocksFile = null;
@@ -47,22 +47,18 @@ public class DigitalClock extends JavaPlugin {
 		}
 		final File table = new File("plugins/DigitalClock/GeoLiteCity.dat");
 		if(!table.exists()) {
-			Thread thread = new Thread(new Runnable() {
-				@Override
-				public void run() {;
-	            	Thread.currentThread().setName(Thread.currentThread().getName() + " - DigitalClock GeoLocation download");
-					System.out.println("[DigitalClock] Downloading file " + table.getName() + ".");
-					try {
-						URL link = new URL("http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz");
-					    ReadableByteChannel rbc = Channels.newChannel(new GZIPInputStream(link.openStream()));
-					    FileOutputStream fos = new FileOutputStream(table);
-					    fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-					    fos.close();
-					} catch (IOException e) {
-						System.err.println("[DigitalClock] Error when downloading file " + table.getName() + ": " + e);
-					} finally {
-						System.out.println("[DigitalClock] File " + table.getName() + " has been downloaded.");
-					}
+			Thread thread = new Thread(() -> {
+				Thread.currentThread().setName(Thread.currentThread().getName() + " - DigitalClock GeoLocation download");
+				System.out.println("[DigitalClock] Downloading file " + table.getName() + ".");
+				try {
+					URL link = new URL("http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz");
+					ReadableByteChannel rbc = Channels.newChannel(new GZIPInputStream(link.openStream()));
+					FileOutputStream fos = new FileOutputStream(table);
+					fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+					fos.close();
+					System.out.println("[DigitalClock] File " + table.getName() + " has been downloaded.");
+				} catch (IOException e) {
+					System.err.println("[DigitalClock] Error when downloading file " + table.getName() + ": " + e);
 				}
 			});
 			thread.start();
@@ -93,12 +89,12 @@ public class DigitalClock extends JavaPlugin {
 		this.getServer().getScheduler().scheduleSyncDelayedTask(this, new AfterDone(this), 0L);
 
 		// METRICS
-		try {
+		/*try {
 		    Metrics metrics = new Metrics(this);
 		    metrics.start();
 		} catch (IOException e) {
 			this.console.severe(e + "");
-		}
+		}*/
 	}
 
 	public void onDisable() {
@@ -108,11 +104,8 @@ public class DigitalClock extends JavaPlugin {
 	}
 
 	protected void runTasks() {
-		this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
-			public void run() {
-				DigitalClock.this.saveClocksConf();
-			}
-		}, 20L, (15*60*20));
+		this.getServer().getScheduler().scheduleSyncRepeatingTask(this,
+				DigitalClock.this::saveClocksConf, 20L, (15*60*20));
 
 		for(final String name : getClocksL()) {
 			this.run(name);
@@ -123,12 +116,10 @@ public class DigitalClock extends JavaPlugin {
 		if(!this.getClockTasks().containsKeyByClockName(name)) {
 			final Clock clock = Clock.loadClockByClockName(name);
 			clock.reloadFromConfig();
-			int task = this.getServer().getScheduler().scheduleSyncRepeatingTask(Generator.getGenerator().getMain(), new Runnable() {
-				public void run() {
-						if(DigitalClock.this.getClocksConf().getKeys(false).contains(clock.getName())) {
-							Generator.getGenerator().generateOnce(clock);
-						}
-				}
+			int task = this.getServer().getScheduler().scheduleSyncRepeatingTask(Generator.getGenerator().getMain(), () -> {
+					if(DigitalClock.this.getClocksConf().getKeys(false).contains(clock.getName())) {
+						Generator.getGenerator().generateOnce(clock);
+					}
 			}, 0L, 20L);
 			this.getClockTasks().put(clock, task);
 		}
@@ -162,7 +153,7 @@ public class DigitalClock extends JavaPlugin {
         }
     }
 
-	protected void saveClocksConf() {
+	public void saveClocksConf() {
 	    if (getClocksConf() == null || clocksFile == null) {
 	    	return;
 	    }

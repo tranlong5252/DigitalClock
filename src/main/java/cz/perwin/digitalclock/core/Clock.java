@@ -1,5 +1,7 @@
 package cz.perwin.digitalclock.core;
 
+import cz.perwin.digitalclock.DigitalClock;
+import cz.perwin.digitalclock.XMaterial;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -12,11 +14,12 @@ public class Clock {
 	private String clockCreator;
 	private Material material;
 	private Material fillingMaterial = Material.AIR;
-	private boolean retrieveData = true;
-	private byte data = (byte) 0;
+	private boolean retrieveData;
+	private byte data;
 	private byte fillingData = (byte) 0;
 	private int addMinutes = 0;
 	protected boolean showSeconds;
+	protected boolean showHours;
 	private boolean blinking;
 	private boolean blinkingChanger;
 	protected boolean ampm;
@@ -63,6 +66,7 @@ public class Clock {
 			Generator.getGenerator().getMain().getClocksConf().set(this.clockName + ".fdata", this.fillingData);
 			Generator.getGenerator().getMain().getClocksConf().set(this.clockName + ".add", this.addMinutes);
 			Generator.getGenerator().getMain().getClocksConf().set(this.clockName + ".seconds", this.showSeconds);
+			Generator.getGenerator().getMain().getClocksConf().set(this.clockName + ".hours", this.showHours);
 			Generator.getGenerator().getMain().getClocksConf().set(this.clockName + ".blinking", this.blinking);
 			Generator.getGenerator().getMain().getClocksConf().set(this.clockName + ".changer", this.blinkingChanger);
 			Generator.getGenerator().getMain().getClocksConf().set(this.clockName + ".ampm", this.ampm);
@@ -100,14 +104,15 @@ public class Clock {
 		this.write();
 	}
 	
-	@SuppressWarnings("deprecation")
-	public Material setFillingMaterial(int id, int md) {
-		this.fillingMaterial = Material.getMaterial(id);
+	public Material setFillingMaterial(String name, int md) {
 		this.fillingData = (byte) md;
+		var optional = XMaterial.matchXMaterial(name);
+		if (optional.isEmpty()) return null;
+		this.material = optional.get().parseMaterial();
 		this.write();
 		return this.fillingMaterial;
 	}
-	
+
 	public static int stopTask(String clockName) {
 		int task = Generator.getGenerator().getMain().getClockTasks().getByClockName(clockName);
 		Generator.getGenerator().getMain().getServer().getScheduler().cancelTask(task);
@@ -121,7 +126,9 @@ public class Clock {
 		}
 		Generator.removeClockAndRestore(clock);
 		clock.setRetrieveData(false);
-		Generator.getGenerator().getMain().getClocksConf().set(clock.getName(), null);
+		DigitalClock i = Generator.getGenerator().getMain();
+		i.getClocksConf().set(clock.getName(), null);
+		i.saveClocksConf();
 		//Generator.getGenerator().getMain().saveConfig();
 	}
 	
@@ -145,6 +152,7 @@ public class Clock {
         	this.fillingData = (byte) Generator.getGenerator().getMain().getClocksConf().getInt(this.clockName + ".fdata");
         	this.addMinutes = Integer.parseInt(Generator.getGenerator().getMain().getClocksConf().getString(this.clockName + ".add"));
         	this.showSeconds = Boolean.parseBoolean(Generator.getGenerator().getMain().getClocksConf().getString(this.clockName + ".seconds"));
+			this.showHours = Boolean.parseBoolean(Generator.getGenerator().getMain().getClocksConf().getString(this.clockName + ".hours"));
         	this.blinking = Boolean.parseBoolean(Generator.getGenerator().getMain().getClocksConf().getString(this.clockName + ".blinking"));
         	this.blinkingChanger = Boolean.parseBoolean(Generator.getGenerator().getMain().getClocksConf().getString(this.clockName + ".changer"));
         	this.ampm = Boolean.parseBoolean(Generator.getGenerator().getMain().getClocksConf().getString(this.clockName + ".ampm"));
@@ -155,9 +163,11 @@ public class Clock {
     }
     
     @SuppressWarnings("deprecation")
-	public Material changeMaterial(int id, int md) {
-    	this.material = Material.getMaterial(id);
+	public Material changeMaterial(String name, int md) {
     	this.data = (byte) md;
+		var optional = XMaterial.matchXMaterial(name);
+		if (optional.isEmpty()) return null;
+		this.material = optional.get().parseMaterial();
     	this.writeAndGenerate();
 		return this.material;
     }
@@ -212,6 +222,13 @@ public class Clock {
 		this.write();
 		ClockArea.resetDimensions(this);
 	}
+
+	public void setShowingHours(boolean hh) {
+		Generator.removeClockAndRestore(this);
+		this.showHours = hh;
+		this.write();
+		ClockArea.resetDimensions(this);
+	}
 	
 	public void setBlinking(boolean bl) {
 		this.blinking = bl;
@@ -248,6 +265,11 @@ public class Clock {
 	public boolean shouldShowSeconds() {
 		this.reloadFromConfig();
 		return this.showSeconds;
+	}
+
+	public boolean shouldShowHours() {
+		this.reloadFromConfig();
+		return this.showHours;
 	}
 
 	public void addMinutes(int m) {
@@ -296,9 +318,6 @@ public class Clock {
 	}
 	
 	protected boolean isSomethingMissing() {
-		if(this.clockCreator != null && this.clockName != null && this.clockArea != null && this.material != null && this.clockMode != null) {
-			return false;
-		}
-		return true;
+		return this.clockCreator == null || this.clockName == null || this.clockArea == null || this.material == null || this.clockMode == null;
 	}
 }

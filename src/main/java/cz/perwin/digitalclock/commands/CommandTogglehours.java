@@ -4,7 +4,7 @@ import cz.perwin.digitalclock.DigitalClock;
 import cz.perwin.digitalclock.core.Clock;
 import org.bukkit.entity.Player;
 
-public class CommandToggleampm implements ICommand {
+public class CommandTogglehours implements ICommand {
     @Override
     public int getArgsSize() {
         return 2;
@@ -12,7 +12,7 @@ public class CommandToggleampm implements ICommand {
 
     @Override
     public String getPermissionName() {
-        return "digitalclock.toggleampm";
+        return "digitalclock.togglehours";
     }
 
     @Override
@@ -32,7 +32,7 @@ public class CommandToggleampm implements ICommand {
 
     @Override
     public String reactBadArgsSize(String usedCmd) {
-        return "§4" + DigitalClock.getMessagePrefix() + "§c Correct usage: '/" + usedCmd + " toggleampm <name>'";
+        return "§4" + DigitalClock.getMessagePrefix() + "§c Correct usage: '/" + usedCmd + " toggleseconds <name>'";
     }
 
     @Override
@@ -52,12 +52,12 @@ public class CommandToggleampm implements ICommand {
     @Override
     public void process(DigitalClock main, Player player, String[] args) {
         Clock clock = Clock.loadClockByClockName(args[1]);
-        if (clock.getAMPM()) {
-            clock.setAMPM(false);
-            player.sendMessage("§2" + DigitalClock.getMessagePrefix() + "§a You have successfully turned AM/PM OFF on clock '" + args[1] + "'.");
+        if (clock.shouldShowHours()) {
+            clock.setShowingHours(false);
+            player.sendMessage("§2" + DigitalClock.getMessagePrefix() + "§a You have successfully hidden hours on clock '" + args[1] + "'.");
         } else {
-            clock.setAMPM(true);
-            player.sendMessage("§2" + DigitalClock.getMessagePrefix() + "§a You have successfully turned AM/PM ON on clock '" + args[1] + "'.");
+            clock.setShowingHours(true);
+            player.sendMessage("§2" + DigitalClock.getMessagePrefix() + "§a You have successfully shown hours on clock '" + args[1] + "'.");
         }
     }
 }

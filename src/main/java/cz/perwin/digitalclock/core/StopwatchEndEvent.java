@@ -7,9 +7,9 @@ import org.bukkit.event.HandlerList;
 
 public class StopwatchEndEvent extends Event {
 	private static final HandlerList handlers = new HandlerList();
-	private Clock clock;
-	private Date endtime;
-	private int endvalue;
+	private final Clock clock;
+	private final Date endtime;
+	private final int endvalue;
 
 	public static HandlerList getHandlerList() {
 	    return handlers;

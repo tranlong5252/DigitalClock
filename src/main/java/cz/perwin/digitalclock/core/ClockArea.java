@@ -5,7 +5,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 
 public class ClockArea {
-	private Clock clock;
+	private final Clock clock;
 	private Block startBlock;
 	private Block playersBlock;
 	private BlockFace direction;
@@ -35,6 +35,9 @@ public class ClockArea {
 		this.width = 5 * Generator.getGenerator().getMain().getSettingsWidth() + 3;
 		if(this.getClock().showSeconds) {
 			this.width += 3 * Generator.getGenerator().getMain().getSettingsWidth() + 1;
+		}
+		if(!this.getClock().showHours) {
+			//todo rút về mm:ss
 		}
 		if(this.getClock().ampm) {
 			this.width += 2 * Generator.getGenerator().getMain().getSettingsWidth() + 2;
@@ -155,6 +158,7 @@ public class ClockArea {
 	public static boolean containsAny(Location l) {
 		for(String clockName : Generator.getGenerator().getMain().getClocksL()) {
 			Clock clock = Clock.loadClockByClockName(clockName);
+			if (clock==null) return false;
 			if(clock.getClockArea().contains(l)) {
 				return true;
 			}
@@ -164,9 +168,6 @@ public class ClockArea {
 	
 	public boolean contains(Location l) {
 		Location max = this.getLocation(this.getHeight()-1, this.getWidth()-1, 0, this.getDepth()-1);
-		if(Math.abs(l.getBlockX()-this.getStartBlock().getX()) <= Math.abs(max.getBlockX()-this.getStartBlock().getX()) && Math.abs(max.getBlockX()-l.getBlockX()) <= Math.abs(max.getBlockX()-this.getStartBlock().getX()) && l.getBlockY() >= this.getStartBlock().getY() && l.getBlockY() <= max.getBlockY() && Math.abs(l.getBlockZ()-this.getStartBlock().getZ()) <= Math.abs(max.getBlockZ()-this.getStartBlock().getZ()) && Math.abs(max.getBlockZ()-l.getBlockZ()) <= Math.abs(max.getBlockZ()-this.getStartBlock().getZ())) {
-			return true;
-		}
-		return false;
+		return Math.abs(l.getBlockX() - this.getStartBlock().getX()) <= Math.abs(max.getBlockX() - this.getStartBlock().getX()) && Math.abs(max.getBlockX() - l.getBlockX()) <= Math.abs(max.getBlockX() - this.getStartBlock().getX()) && l.getBlockY() >= this.getStartBlock().getY() && l.getBlockY() <= max.getBlockY() && Math.abs(l.getBlockZ() - this.getStartBlock().getZ()) <= Math.abs(max.getBlockZ() - this.getStartBlock().getZ()) && Math.abs(max.getBlockZ() - l.getBlockZ()) <= Math.abs(max.getBlockZ() - this.getStartBlock().getZ());
 	}
 }

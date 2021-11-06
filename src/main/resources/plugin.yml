@@ -1,6 +1,7 @@
 name: DigitalClock
 main: cz.perwin.digitalclock.DigitalClock
 author: PerwinCZ
+api-version: 1.13
 version: 2.0
 commands:
   digitalclock:
@@ -47,7 +48,7 @@ permissions:
   digitalclock.toggleseconds:
     description: Allows you to toggle showing seconds    
   digitalclock.toggleingametime:
-    description: Allows you to toggle showing of ingame time
+    description: Allows you to toggle showing of ingame or world (ingame) time
   digitalclock.settime:
     description: Allows you to set time on specified clock
   digitalclock.toggleblinking:
@@ -60,8 +61,6 @@ permissions:
     description: Allows you to set stopwatch mode on clock
   digitalclock.disablestopwatch:
     description: Allows you to disable stopwatch mode on clock
-  digitalclock.toggleingametime:
-    description: Allows you to toggle showing of world (ingame) time   
   digitalclock.update:
     description: Allows you to update plugin to a newer version
     

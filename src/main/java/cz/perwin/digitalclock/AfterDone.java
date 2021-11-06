@@ -1,7 +1,7 @@
 package cz.perwin.digitalclock;
 
 public class AfterDone implements Runnable {
-	private DigitalClock i;
+	private final DigitalClock i;
 	
 	public AfterDone(DigitalClock i) {
 		this.i = i;
