@@ -6,10 +6,9 @@ version: 2.0
 commands:
   digitalclock:
     description: Use more arguments for this command
-    usage: /digitalclock (arguments)  
-  dc:
-    description: Alias of /digitalclock
-    usage: /dc (arguments)
+    usage: /digitalclock (arguments)
+    aliases:
+      -  dc
 permissions:
   digitalclock.create:
     description: Allows you to create a new clock 
@@ -43,15 +42,17 @@ permissions:
     description: Sets the limit of clocks per player 
   digitalclock.addingminutes:
     description: Allows you to add minutes on your clock  
-  digitalclock.toggleampm:
+  digitalclock.ampm:
     description: Allows you to toggle showing AM/PM 
-  digitalclock.toggleseconds:
-    description: Allows you to toggle showing seconds    
-  digitalclock.toggleingametime:
+  digitalclock.seconds:
+    description: Allows you to toggle showing seconds
+  digitalclock.hours:
+    description: Allows you to toggle showing hours
+  digitalclock.ingametime:
     description: Allows you to toggle showing of ingame or world (ingame) time
   digitalclock.settime:
     description: Allows you to set time on specified clock
-  digitalclock.toggleblinking:
+  digitalclock.blinking:
     description: Allows you to toggle blinking of colon (:)
   digitalclock.setcountdown:
     description: Allows you to set countdown mode on clock 

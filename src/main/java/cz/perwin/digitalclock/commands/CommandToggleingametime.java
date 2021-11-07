@@ -13,7 +13,7 @@ public class CommandToggleingametime implements ICommand {
 
     @Override
     public String getPermissionName() {
-        return "digitalclock.toggleingametime";
+        return "digitalclock.ingametime";
     }
 
     @Override
@@ -33,7 +33,7 @@ public class CommandToggleingametime implements ICommand {
 
     @Override
     public String reactBadArgsSize(String usedCmd) {
-        return "§4" + DigitalClock.getMessagePrefix() + "§c Correct usage: '/" + usedCmd + " toggleingametime <name>'";
+        return "§4" + DigitalClock.getMessagePrefix() + "§c Correct usage: '/" + usedCmd + " ingametime <name>'";
     }
 
     @Override

@@ -12,7 +12,7 @@ public class CommandTogglehours implements ICommand {
 
     @Override
     public String getPermissionName() {
-        return "digitalclock.togglehours";
+        return "digitalclock.hours";
     }
 
     @Override
@@ -32,7 +32,7 @@ public class CommandTogglehours implements ICommand {
 
     @Override
     public String reactBadArgsSize(String usedCmd) {
-        return "§4" + DigitalClock.getMessagePrefix() + "§c Correct usage: '/" + usedCmd + " toggleseconds <name>'";
+        return "§4" + DigitalClock.getMessagePrefix() + "§c Correct usage: '/" + usedCmd + " hours <name>'";
     }
 
     @Override
@@ -52,6 +52,7 @@ public class CommandTogglehours implements ICommand {
     @Override
     public void process(DigitalClock main, Player player, String[] args) {
         Clock clock = Clock.loadClockByClockName(args[1]);
+        if (clock == null) return;
         if (clock.shouldShowHours()) {
             clock.setShowingHours(false);
             player.sendMessage("§2" + DigitalClock.getMessagePrefix() + "§a You have successfully hidden hours on clock '" + args[1] + "'.");

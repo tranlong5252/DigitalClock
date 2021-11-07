@@ -12,7 +12,7 @@ public class CommandToggleseconds implements ICommand {
 
     @Override
     public String getPermissionName() {
-        return "digitalclock.toggleseconds";
+        return "digitalclock.seconds";
     }
 
     @Override
@@ -32,7 +32,7 @@ public class CommandToggleseconds implements ICommand {
 
     @Override
     public String reactBadArgsSize(String usedCmd) {
-        return "§4" + DigitalClock.getMessagePrefix() + "§c Correct usage: '/" + usedCmd + " toggleseconds <name>'";
+        return "§4" + DigitalClock.getMessagePrefix() + "§c Correct usage: '/" + usedCmd + " seconds <name>'";
     }
 
     @Override

@@ -12,7 +12,7 @@ public class CommandToggleampm implements ICommand {
 
     @Override
     public String getPermissionName() {
-        return "digitalclock.toggleampm";
+        return "digitalclock.ampm";
     }
 
     @Override
@@ -32,7 +32,7 @@ public class CommandToggleampm implements ICommand {
 
     @Override
     public String reactBadArgsSize(String usedCmd) {
-        return "§4" + DigitalClock.getMessagePrefix() + "§c Correct usage: '/" + usedCmd + " toggleampm <name>'";
+        return "§4" + DigitalClock.getMessagePrefix() + "§c Correct usage: '/" + usedCmd + " ampm <name>'";
     }
 
     @Override

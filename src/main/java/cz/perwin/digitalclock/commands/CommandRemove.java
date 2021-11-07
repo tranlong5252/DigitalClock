@@ -52,8 +52,10 @@ public class CommandRemove implements ICommand {
     @Override
     public void process(DigitalClock main, Player player, String[] args) {
         Clock clock = Clock.loadClockByClockName(args[1]);
-        Clock.eraseCompletely(clock);
-        main.getClocks();
-        player.sendMessage("§2" + DigitalClock.getMessagePrefix() + "§a Your clock '" + args[1] + "' has been successfully removed.");
+        if (clock != null) {
+            Clock.eraseCompletely(clock);
+            main.getClocks();
+            player.sendMessage("§2" + DigitalClock.getMessagePrefix() + "§a Your clock '" + args[1] + "' has been successfully removed.");
+        }
     }
 }

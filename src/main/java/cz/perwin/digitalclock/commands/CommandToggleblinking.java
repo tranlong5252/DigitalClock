@@ -12,7 +12,7 @@ public class CommandToggleblinking implements ICommand {
 
     @Override
     public String getPermissionName() {
-        return "digitalclock.toggleblinking";
+        return "digitalclock.blinking";
     }
 
     @Override
@@ -32,7 +32,7 @@ public class CommandToggleblinking implements ICommand {
 
     @Override
     public String reactBadArgsSize(String usedCmd) {
-        return "§4" + DigitalClock.getMessagePrefix() + "§c Correct usage: '/" + usedCmd + " toggleblinking <name>'";
+        return "§4" + DigitalClock.getMessagePrefix() + "§c Correct usage: '/" + usedCmd + " blinking <name>'";
     }
 
     @Override

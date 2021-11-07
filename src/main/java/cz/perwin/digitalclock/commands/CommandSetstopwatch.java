@@ -19,7 +19,7 @@ public class CommandSetstopwatch implements ICommand {
     @Override
     public boolean specialCondition(DigitalClock main, Player player, String[] args) {
         ClockMode cm = Clock.loadClockByClockName(args[1]).getClockMode();
-        return cm == ClockMode.COUNTDOWN || cm == ClockMode.STOPWATCH;
+        return (cm == ClockMode.COUNTDOWN || cm == ClockMode.STOPWATCH) && Clock.isRunning(args[1]);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class CommandSetstopwatch implements ICommand {
 
     @Override
     public void specialConditionProcess(DigitalClock main, Player player, String[] args) {
-        player.sendMessage("§4" + DigitalClock.getMessagePrefix() + "§c Clock '" + args[1] + "' has already enabled countdown or stopwatch mode! Disable it with command 'disablecountdown <name>' or 'disablestopwatch <name>'.");
+        player.sendMessage("§4" + DigitalClock.getMessagePrefix() + "§c Clock '" + args[1] + "' has already running! Stop it with command 'stopclock <name>'.");
     }
 
     @Override

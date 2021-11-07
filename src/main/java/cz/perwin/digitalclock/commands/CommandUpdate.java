@@ -42,7 +42,6 @@ public class CommandUpdate implements ICommand {
 
     @Override
     public void specialConditionProcess(DigitalClock main, Player player, String[] args) {
-        return;
     }
 
     @Override
